@@ -10,15 +10,22 @@ export default function Partners() {
         <h2 className="text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">
           Our Community Partners
         </h2>
-        <ul className="mt-10 flex flex-wrap items-center justify-center gap-x-14 gap-y-8">
+
+        {/* Partner marks sit on white plates rather than being recoloured.
+            Minto's is navy, which would disappear against this ground, and a
+            partner's logo is theirs to specify, not ours to restyle. */}
+        <ul className="mt-10 flex flex-wrap items-center justify-center gap-5">
           {partners.map((p) => (
-            <li key={p.name}>
+            <li
+              key={p.name}
+              className="flex h-20 items-center justify-center rounded-xl bg-white px-8 shadow-sm"
+            >
               <Image
                 src={p.logo}
                 alt={p.name}
-                width={220}
-                height={80}
-                className="h-10 w-auto opacity-70 transition-opacity hover:opacity-100"
+                width={344}
+                height={120}
+                className="h-8 w-auto"
               />
             </li>
           ))}

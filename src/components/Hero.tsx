@@ -13,9 +13,11 @@ export default function Hero() {
         className="object-cover"
       />
       {/* Legibility scrim: darker at the edges, lifted in the middle */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/45 to-black/85" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/35 to-black/80" />
 
-      <div className="relative mx-auto flex min-h-[78vh] max-w-4xl flex-col items-center justify-center px-5 py-24 text-center sm:min-h-[80vh]">
+      {/* Fixed heights rather than vh: the hero photo is a wide 2.3:1 crop, and
+          a tall viewport would scale it up and cut the guards off the edges. */}
+      <div className="relative mx-auto flex min-h-[560px] max-w-4xl flex-col items-center justify-center px-5 py-20 text-center sm:min-h-[620px] lg:min-h-[680px]">
         <Image
           src="/images/shield.png"
           alt=""
