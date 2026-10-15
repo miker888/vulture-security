@@ -1,46 +1,61 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { site } from "@/lib/site";
+import { siteUrl } from "@/lib/url";
 
-// Poppins, self-hosted. No request to Google at build or run time.
-const poppins = localFont({
-  variable: "--font-poppins",
+// Barlow and Barlow Condensed, self-hosted. No request to Google at build or run time.
+const barlow = localFont({
+  variable: "--font-barlow",
   display: "swap",
   src: [
-    { path: "../fonts/poppins-latin-300-normal.woff2", weight: "300", style: "normal" },
-    { path: "../fonts/poppins-latin-400-normal.woff2", weight: "400", style: "normal" },
-    { path: "../fonts/poppins-latin-500-normal.woff2", weight: "500", style: "normal" },
-    { path: "../fonts/poppins-latin-600-normal.woff2", weight: "600", style: "normal" },
-    { path: "../fonts/poppins-latin-700-normal.woff2", weight: "700", style: "normal" },
-    { path: "../fonts/poppins-latin-800-normal.woff2", weight: "800", style: "normal" },
+    { path: "../fonts/barlow-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/barlow-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/barlow-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
+});
+
+const barlowCondensed = localFont({
+  variable: "--font-barlow-condensed",
+  display: "swap",
+  src: [
+    { path: "../fonts/barlow-condensed-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../fonts/barlow-condensed-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../fonts/barlow-condensed-latin-800-normal.woff2", weight: "800", style: "normal" },
   ],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
+  // Trailing slash so relative URLs below keep the GitHub Pages base path.
+  metadataBase: new URL(`${siteUrl}/`),
   title: {
-    default: `${site.name} | Calgary Security Guards & Mobile Patrol`,
+    default: `${site.name} | Calgary Security Officers & Mobile Patrol`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
   openGraph: {
-    title: `${site.name} | Calgary Security Guards & Mobile Patrol`,
+    title: `${site.name} | Calgary Security Officers & Mobile Patrol`,
     description: site.description,
-    url: site.url,
     siteName: site.name,
     locale: "en_CA",
     type: "website",
+    // Relative to metadataBase, which already includes the base path.
+    images: [{ url: "og.jpg", width: 1152, height: 576, alt: site.name }],
   },
+  twitter: { card: "summary_large_image" },
   robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0b",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${poppins.variable} antialiased`}>
+    <html lang="en-CA">
+      <body className={`${barlow.variable} ${barlowCondensed.variable} antialiased`}>
         {children}
         <script
           type="application/ld+json"
@@ -50,7 +65,7 @@ export default function RootLayout({
               "@type": "SecurityService",
               name: site.legalName,
               url: site.url,
-              telephone: site.contact.phone,
+              telephone: site.contact.phoneLong,
               email: site.contact.email,
               address: {
                 "@type": "PostalAddress",

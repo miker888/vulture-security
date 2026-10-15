@@ -1,72 +1,45 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import { Eyebrow } from "@/components/ui";
 import { formatPostDate, getPublishedPosts } from "@/lib/posts";
 
 export const metadata: Metadata = {
   title: "News & Updates",
   description:
-    "Security insight, Calgary crime data and company updates from Vulture Security Services.",
+    "Security insight, Calgary safety data and company updates from Vulture Security Services.",
 };
 
-export const revalidate = 300;
-
-export default async function BlogIndex() {
-  const posts = await getPublishedPosts();
+export default function BlogIndex() {
+  const posts = getPublishedPosts();
 
   return (
     <>
-      <Header />
-      <main className="bg-ink">
-        <div className="mx-auto max-w-4xl px-5 py-20 sm:px-8 md:py-28">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-crimson">
-            From the field
-          </p>
-          <h1 className="mt-3 font-display text-4xl font-bold tracking-[-0.02em] text-white sm:text-5xl">
-            News &amp; Updates
+      <Header showNews />
+      <main className="bg-paper text-graphite">
+        <div className="wrap max-w-[960px] py-[clamp(48px,6vw,96px)]">
+          <Eyebrow tone="light">From the field</Eyebrow>
+          <h1 className="mt-4 font-display text-[clamp(48px,5vw,76px)] font-extrabold uppercase leading-[0.92]">
+            News and updates
           </h1>
 
           {posts.length === 0 ? (
-            <p className="mt-10 text-[15px] text-mist">
-              No posts published yet. Check back soon.
-            </p>
+            <p className="mt-10 text-lg text-slate">No posts published yet. Check back soon.</p>
           ) : (
-            <ul className="mt-14 divide-y divide-line border-t border-line">
+            <ul className="mt-12 border-t border-[#d9d4cc]">
               {posts.map((post) => (
-                <li key={post.id}>
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="group grid gap-6 py-10 sm:grid-cols-[220px_1fr]"
-                  >
-                    {post.cover_image ? (
-                      <div className="relative aspect-16/10 w-full overflow-hidden rounded-xl bg-surface">
-                        <Image
-                          src={post.cover_image}
-                          alt=""
-                          fill
-                          sizes="(max-width: 640px) 100vw, 220px"
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                    ) : (
-                      <div className="hidden sm:block" />
+                <li key={post.slug} className="border-b border-[#d9d4cc]">
+                  <Link href={`/blog/${post.slug}/`} className="group flex flex-col gap-2.5 py-9">
+                    <span className="text-sm font-semibold text-pebble">
+                      {formatPostDate(post.date)} · {post.author}
+                    </span>
+                    <span className="font-display text-[clamp(26px,2.6vw,34px)] font-extrabold uppercase leading-[1.05] group-hover:text-brand-deep">
+                      {post.title}
+                    </span>
+                    {post.excerpt && (
+                      <span className="max-w-[720px] text-base leading-relaxed text-slate">{post.excerpt}</span>
                     )}
-                    <div>
-                      <p className="text-xs text-neutral-500">
-                        {formatPostDate(post.published_at)}
-                        {post.author ? ` · ${post.author}` : ""}
-                      </p>
-                      <h2 className="mt-2 font-display text-xl font-semibold leading-snug text-white transition-colors group-hover:text-gold">
-                        {post.title}
-                      </h2>
-                      {post.excerpt && (
-                        <p className="mt-3 text-sm leading-relaxed text-mist">
-                          {post.excerpt}
-                        </p>
-                      )}
-                    </div>
                   </Link>
                 </li>
               ))}
@@ -74,7 +47,7 @@ export default async function BlogIndex() {
           )}
         </div>
       </main>
-      <Footer />
+      <Footer showNews />
     </>
   );
 }

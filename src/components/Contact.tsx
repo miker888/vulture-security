@@ -1,65 +1,63 @@
 import { site } from "@/lib/site";
 import ContactForm from "./ContactForm";
+import Icon, { type IconName } from "./Icon";
+import { Eyebrow, h2Class } from "./ui";
+
+function Detail({
+  icon,
+  label,
+  children,
+}: {
+  icon: IconName;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-4">
+      <span className="flex h-12 w-12 flex-none items-center justify-center rounded-[2px] border border-sand bg-white text-brand-deep">
+        <Icon name={icon} size={22} />
+      </span>
+      <div className="flex flex-col">
+        <span className="text-[13px] font-semibold uppercase tracking-[1.5px] text-pebble">{label}</span>
+        <span className="text-[17px] text-graphite">{children}</span>
+      </div>
+    </div>
+  );
+}
 
 export default function Contact() {
   return (
-    <section id="contact" className="border-t border-line bg-surface">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 py-20 sm:px-8 md:grid-cols-2 md:gap-20 md:py-28">
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-crimson">
-            {site.legalName}
+    <section id="contact" className="bg-paper py-[clamp(64px,8vw,120px)] text-graphite">
+      <div className="wrap flex flex-wrap items-start gap-16">
+        <div className="flex min-w-0 flex-[1_1_380px] flex-col gap-6">
+          <Eyebrow tone="light">Contact</Eyebrow>
+          <h2 className={h2Class}>Get in touch.</h2>
+          <p className="text-lg leading-relaxed text-slate">
+            Questions about coverage, pricing or an existing site? Send us a note
+            or give us a call.
           </p>
-          <h2 className="mt-3 font-display text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
-            Get in Touch
-          </h2>
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-mist">
-            Tell us what you need covered and we will come back with a plan and
-            a rate. Same-day response on weekdays.
-          </p>
-
-          <dl className="mt-10 space-y-6 text-sm">
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                Office
-              </dt>
-              <dd className="mt-1.5 text-white">
-                {site.contact.addressLines.map((line) => (
-                  <span key={line} className="block">
-                    {line}
-                  </span>
-                ))}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                Phone
-              </dt>
-              <dd className="mt-1.5">
-                <a
-                  href={site.contact.phoneHref}
-                  className="text-white transition-colors hover:text-gold"
-                >
-                  {site.contact.phone}
-                </a>
-              </dd>
-            </div>
-            <div>
-              <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
-                Email
-              </dt>
-              <dd className="mt-1.5">
-                <a
-                  href={`mailto:${site.contact.email}`}
-                  className="text-white transition-colors hover:text-gold"
-                >
-                  {site.contact.email}
-                </a>
-              </dd>
-            </div>
-          </dl>
+          <div className="mt-2 flex flex-col gap-5">
+            <Detail icon="mapPin" label="Office">
+              {site.contact.addressLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </Detail>
+            <Detail icon="phone" label="Phone">
+              <a href={site.contact.phoneHref} className="hover:text-brand-deep">
+                {site.contact.phoneLong}
+              </a>
+            </Detail>
+            <Detail icon="mail" label="Email">
+              <a href={`mailto:${site.contact.email}`} className="hover:text-brand-deep">
+                {site.contact.email}
+              </a>
+            </Detail>
+          </div>
         </div>
 
-        <div className="rounded-2xl border border-line bg-ink p-6 sm:p-8">
+        <div className="min-w-0 flex-[1_1_520px] rounded-[2px] border border-sand bg-white p-[clamp(24px,3vw,40px)]">
           <ContactForm />
         </div>
       </div>

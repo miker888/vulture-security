@@ -1,54 +1,85 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand palette taken from the Vulture shield: near-black ground,
-     crimson wings, gold star. */
+  /* Poster palette: near-black ground, Vulture red, warm off-white. */
   --color-ink: #0a0a0b;
-  --color-surface: #141416;
-  --color-surface-2: #1d1d20;
-  --color-line: #2a2a2e;
-  --color-crimson: #c8102e;
-  --color-crimson-dark: #9b0c23;
-  --color-gold: #e0a80d;
-  --color-mist: #a1a1aa;
+  --color-surface: #111113;
+  --color-surface-2: #141416;
+  --color-line: #26262a;
+  --color-line-strong: #34343a;
+  --color-smoke: #b9b9be; /* body text on dark */
+  --color-mist: #8e8e95; /* captions on dark */
 
-  --font-display: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
-  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --color-brand: #d71920; /* fills: buttons, bars, chips */
+  --color-brand-hot: #ff3b42; /* small red text on dark */
+  --color-brand-deep: #b3121a; /* small red text on light */
+  --color-brand-head: #e3222a; /* large red headlines on dark */
+  --color-brand-head-light: #c8161d; /* large red headlines on light */
+
+  --color-paper: #f3f1ee;
+  --color-sand: #e2ded8;
+  --color-sand-strong: #cfcac2;
+  --color-graphite: #121214; /* text on light */
+  --color-slate: #45454b; /* body text on light */
+  --color-pebble: #6b6b72; /* captions on light */
+
+  --font-display: var(--font-barlow-condensed), "Arial Narrow", sans-serif;
+  --font-sans: var(--font-barlow), ui-sans-serif, system-ui, sans-serif;
 }
 
-:root {
-  color-scheme: dark;
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1280px;
+  padding-inline: clamp(16px, 4vw, 48px);
+  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: 6rem;
 }
 
 body {
   background: var(--color-ink);
-  color: #ffffff;
+  color: #f5f5f4;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Rendered blog post body */
+/* The poster's angled red slash, used on the hero photo and the CTA ribbon. */
+.clip-hero-slab {
+  clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%);
+}
+.clip-hero-photo {
+  clip-path: polygon(19% 0, 100% 0, 100% 100%, 5% 100%);
+}
+.clip-ribbon {
+  clip-path: polygon(0 0, 100% 0, 97.5% 100%, 0 100%);
+}
+
+/* Rendered blog post body, on the light page */
 .prose-vulture {
-  color: #d4d4d8;
+  color: var(--color-slate);
+  font-size: 1.125rem;
   line-height: 1.75;
 }
 .prose-vulture h2 {
-  color: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-top: 2.5rem;
-  margin-bottom: 0.75rem;
-  letter-spacing: -0.01em;
+  color: var(--color-graphite);
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin-top: 2.75rem;
+  margin-bottom: 0.875rem;
 }
 .prose-vulture h3 {
-  color: #ffffff;
-  font-size: 1.185rem;
-  font-weight: 600;
+  color: var(--color-graphite);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
   margin-top: 2rem;
   margin-bottom: 0.5rem;
 }
@@ -68,23 +99,46 @@ body {
 .prose-vulture ol {
   list-style: decimal;
 }
+.prose-vulture li::marker {
+  color: var(--color-brand);
+}
 .prose-vulture a {
-  color: var(--color-gold);
+  color: var(--color-brand-deep);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .prose-vulture strong {
-  color: #ffffff;
+  color: var(--color-graphite);
   font-weight: 600;
 }
 .prose-vulture blockquote {
-  border-left: 3px solid var(--color-crimson);
-  padding-left: 1rem;
+  border-left: 4px solid var(--color-brand);
+  padding-left: 1.25rem;
+  margin: 1.75rem 0;
+  color: var(--color-graphite);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.prose-vulture table {
+  width: 100%;
+  border-collapse: collapse;
   margin: 1.5rem 0;
-  color: #ffffff;
-  font-style: italic;
+  font-size: 1rem;
+}
+.prose-vulture th,
+.prose-vulture td {
+  border-bottom: 1px solid var(--color-sand);
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+}
+.prose-vulture th {
+  color: var(--color-graphite);
+  font-weight: 600;
 }
 .prose-vulture img {
-  border-radius: 0.75rem;
+  border-radius: 2px;
   margin: 2rem 0;
 }

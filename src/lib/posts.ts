@@ -1,64 +1,82 @@
-import { createClient, supabaseConfigured } from "@/lib/supabase/server";
+import fs from "node:fs";
+import path from "node:path";
+
+// News & Updates posts are Markdown files in src/content/posts.
+// Add a file, push to main, and the site rebuilds with the new post.
+//
+// Each file starts with a front matter block:
+//
+// ---
+// title: Post title
+// excerpt: One or two sentences for listings and search results.
+// date: 2026-05-13
+// author: Vulture Security Services
+// draft: false
+// ---
 
 export type Post = {
-  id: string;
   slug: string;
   title: string;
-  excerpt: string | null;
+  excerpt: string;
+  date: string;
+  author: string;
+  draft: boolean;
   content: string;
-  cover_image: string | null;
-  author: string | null;
-  published: boolean;
-  published_at: string | null;
-  created_at: string;
-  updated_at: string;
 };
 
-/**
- * Published posts, newest first. Returns an empty list when Supabase is not
- * yet configured so the site still builds and renders.
- */
-export async function getPublishedPosts(limit?: number): Promise<Post[]> {
-  if (!supabaseConfigured()) return [];
+const POSTS_DIR = path.join(process.cwd(), "src/content/posts");
 
-  const supabase = await createClient();
-  let query = supabase
-    .from("posts")
-    .select("*")
-    .eq("published", true)
-    .order("published_at", { ascending: false });
+function parse(file: string): Post {
+  const raw = fs.readFileSync(path.join(POSTS_DIR, file), "utf8");
+  const match = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  const meta: Record<string, string> = {};
+  let content = raw;
 
-  if (limit) query = query.limit(limit);
-
-  const { data, error } = await query;
-  if (error) {
-    console.error("Failed to load posts", error.message);
-    return [];
+  if (match) {
+    content = match[2];
+    for (const line of match[1].split(/\r?\n/)) {
+      const i = line.indexOf(":");
+      if (i === -1) continue;
+      const key = line.slice(0, i).trim();
+      const value = line
+        .slice(i + 1)
+        .trim()
+        .replace(/^["']|["']$/g, "");
+      meta[key] = value;
+    }
   }
-  return (data ?? []) as Post[];
+
+  return {
+    slug: file.replace(/\.md$/, ""),
+    title: meta.title ?? file,
+    excerpt: meta.excerpt ?? "",
+    date: meta.date ?? "",
+    author: meta.author ?? "Vulture Security Services",
+    draft: meta.draft === "true",
+    content: content.trim(),
+  };
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
-  if (!supabaseConfigured()) return null;
-
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("slug", slug)
-    .eq("published", true)
-    .maybeSingle();
-
-  if (error) {
-    console.error("Failed to load post", error.message);
-    return null;
-  }
-  return (data as Post) ?? null;
+/** Published posts, newest first. Drafts are left out of the build. */
+export function getPublishedPosts(limit?: number): Post[] {
+  if (!fs.existsSync(POSTS_DIR)) return [];
+  const posts = fs
+    .readdirSync(POSTS_DIR)
+    .filter((f) => f.endsWith(".md"))
+    .map(parse)
+    .filter((p) => !p.draft)
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
+  return limit ? posts.slice(0, limit) : posts;
 }
 
-export function formatPostDate(value: string | null) {
+export function getPostBySlug(slug: string): Post | null {
+  return getPublishedPosts().find((p) => p.slug === slug) ?? null;
+}
+
+export function formatPostDate(value: string) {
   if (!value) return "";
-  return new Date(value).toLocaleDateString("en-CA", {
+  // Dates are plain YYYY-MM-DD; parse at noon so time zones never shift the day.
+  return new Date(`${value}T12:00:00`).toLocaleDateString("en-CA", {
     year: "numeric",
     month: "long",
     day: "numeric",

@@ -5,28 +5,24 @@ export default function Partners() {
   if (partners.length === 0) return null;
 
   return (
-    <section className="border-t border-line bg-ink">
-      <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8">
-        <h2 className="text-center text-[11px] font-semibold uppercase tracking-[0.22em] text-mist">
-          Our Community Partners
+    <section
+      aria-labelledby="partners-heading"
+      className="border-y border-sand bg-white py-14 text-graphite"
+    >
+      <div className="wrap flex flex-wrap items-center justify-between gap-x-10 gap-y-6">
+        <h2
+          id="partners-heading"
+          className="font-display text-base font-bold uppercase tracking-[3px] text-slate"
+        >
+          Our community partners
         </h2>
-
-        {/* Partner marks sit on white plates rather than being recoloured.
-            Minto's is navy, which would disappear against this ground, and a
-            partner's logo is theirs to specify, not ours to restyle. */}
-        <ul className="mt-10 flex flex-wrap items-center justify-center gap-5">
+        <ul className="flex flex-wrap items-center gap-4">
           {partners.map((p) => (
             <li
               key={p.name}
-              className="flex h-20 items-center justify-center rounded-xl bg-white px-8 shadow-sm"
+              className="flex h-[72px] items-center justify-center rounded-[2px] border border-sand px-7"
             >
-              <Image
-                src={p.logo}
-                alt={p.name}
-                width={344}
-                height={120}
-                className="h-8 w-auto"
-              />
+              <Image src={p.logo} alt={p.name} className="h-8 w-auto" />
             </li>
           ))}
         </ul>

@@ -1,90 +1,89 @@
-# Vulture Security Services
+# Vulture Security Services website
 
 Marketing site for Vulture Security Services Ltd., Calgary. Replaces the Wix site at vulturesecurity.ca.
+Set up the same way as the Aspire site:
 
-**Stack:** Next.js 16 (App Router) · React 19 · Tailwind CSS 4 · Supabase (Postgres + Auth) · Vercel
+- **Framework:** Next.js, exported as a static site (`out/`)
+- **Hosting:** GitHub Pages, deployed automatically on every push to `main`
+- **Forms:** the contact form and the risk assessment form save to a Supabase `leads` table
 
-## What's in here
+## Pages
 
 | Route | What it is |
 | --- | --- |
-| `/` | One-page marketing site: hero, about, services, partners, latest news, contact form |
-| `/blog` | News & Updates listing |
-| `/blog/[slug]` | Individual post, Markdown rendered |
-| `/admin` | Login-protected dashboard: write posts, read contact form enquiries |
-| `/admin/login` | Supabase email + password sign-in |
+| `/` | Home: hero, services, who we protect, how we show up, our standard, partners, contact |
+| `/risk-assessment/` | Free risk assessment request, a 3-step form |
+| `/blog/` | News & Updates. Appears in the menu once a post is published |
 
-Contact form submissions are written to a Supabase `leads` table by a server action using the service-role key, so the public can submit but nobody can read the table without signing in. An optional Resend email fires on each submission; if it fails, the lead is still saved.
+## Editing content
 
-Site copy, services, contact details and partner logos live in one file: **`src/lib/site.ts`**. Edit there, not in the components.
+- Copy, services, contact details, form options and partner logos: [`src/lib/site.ts`](src/lib/site.ts)
+- Images: `src/assets/` (imported in code so they work under the GitHub Pages base path)
+- Anything in `[brackets]` is a placeholder, e.g. the licence number in the footer
 
-## Setup
+## News & Updates posts
 
-### 1. Supabase
+Posts are Markdown files in [`src/content/posts/`](src/content/posts). Add a file, push to `main`, and the site rebuilds.
+Each file starts with:
 
-1. Create a project at [supabase.com](https://supabase.com) (free tier is fine).
-2. SQL Editor → New query → paste `supabase/schema.sql` → Run.
-3. Same again with `supabase/seed.sql` to import the post migrated off Wix.
-4. Authentication → Users → **Add user** → create your own email + password. This is the `/admin` login. Turn off public sign-ups under Authentication → Providers so nobody else can register.
-5. Project Settings → API → copy the Project URL, the `anon` key, and the `service_role` key.
-
-### 2. Environment variables
-
-```bash
-cp .env.example .env.local
+```
+---
+title: Post title
+excerpt: One or two sentences for listings and search results.
+date: 2026-05-13
+author: Vulture Security Services
+draft: false
+---
 ```
 
-Fill in the three Supabase values. `SUPABASE_SERVICE_ROLE_KEY` is server-only and must never be committed or prefixed with `NEXT_PUBLIC_`.
+`draft: true` keeps a post out of the site. The post migrated from Wix is a draft until the ranked table of
+ten communities is pasted in where the `TODO` is.
 
-### 3. Run it
+## Leads (Supabase)
+
+Both forms insert into `public.leads` in the shared **virus-demos** Supabase project, the same one Aspire uses.
+Every row is tagged `site = 'vulture-security'`. Visitors can insert rows but never read them.
+
+- Contact form rows have `interest = 'General enquiry'`
+- Risk assessment rows have `interest = 'Free risk assessment'`, with property type, services, coverage, start date,
+  address, company and preferred contact in `message`
+
+To see leads: Supabase dashboard → virus-demos → Table Editor → `leads` → filter `site` = `vulture-security`.
+
+The URL and publishable key in `.env.production` are browser-safe values meant to be public.
+Never put a secret or service-role key in this repo. To move Vulture to its own Supabase project later, run
+[`supabase/leads.sql`](supabase/leads.sql) in that project and swap the two values in `.env.production`.
+
+## Run locally
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+cp .env.example .env.local   # optional: .env.production already points at the shared project
+npm run dev                  # http://localhost:3000
 ```
 
-### 4. Deploy
+`npm run build` writes the static site to `out/`, and `npm run preview` serves it.
 
-1. Push this repo to GitHub.
-2. [vercel.com/new](https://vercel.com/new) → import the repo → deploy. No build settings to change.
-3. Vercel → Settings → Environment Variables → paste the same values from `.env.local`.
-4. Redeploy. You now have a live preview URL.
-5. Only once the preview looks right: Vercel → Settings → Domains → add `vulturesecurity.ca` and `www.vulturesecurity.ca`, then update the DNS records at your registrar as Vercel instructs.
-6. Keep Wix running until DNS has propagated and the new site is verified, then cancel it.
+## Deploying
 
-Every push to `main` deploys automatically. Every branch gets its own preview URL.
+`.github/workflows/deploy.yml` builds and publishes to GitHub Pages on every push to `main`.
 
-## Images
+1. Repo Settings → Pages → Source: **GitHub Actions**.
+2. GitHub Pages on a free account only works for **public** repos (Aspire is public). Either make this repo public
+   or use GitHub Pro.
 
-`public/images/` currently holds **generated placeholders** marked `REPLACE:`. Export the originals from Wix (Wix Dashboard → Media Manager → select → Download) and overwrite these files, keeping the same names:
+The preview lives at `https://miker888.github.io/vulture-security/`.
 
-| File | Used for |
-| --- | --- |
-| `logo.png` | Header wordmark (transparent PNG, roughly 420×110) |
-| `shield.png` | Hero shield crest (transparent PNG) |
-| `hero.jpg` | Hero background, 1920×1080 or larger |
-| `about-guard.jpg` | About section portrait, tall crop |
-| `service-static.jpg` | Static Security card |
-| `service-loss-prevention.jpg` | Loss Prevention card |
-| `service-event.jpg` | Event Security card |
-| `service-vip.jpg` | VIP Escort card |
-| `partners/minto.png` | Community partner logo |
+### Moving vulturesecurity.ca off Wix
 
-## Writing posts
+Only once the preview is approved:
 
-Sign in at `/admin`, click **New post**. The body accepts Markdown:
-
-```
-## Section heading
-**bold**  ·  *italic*  ·  [link](https://example.com)
-- bullet
-> pull quote
-```
-
-Leave **Published** unchecked to save a draft. Published posts appear on `/blog` and in the "News & Updates" block on the home page within five minutes.
-
-## Notes
-
-- `src/proxy.ts` is the Next.js 16 replacement for `middleware.ts`. It refreshes the Supabase session cookie and redirects unauthenticated visitors away from `/admin`.
-- Poppins is self-hosted from `src/fonts/`. No requests to Google Fonts at build or run time.
-- `/admin` is excluded from `robots.txt` and the sitemap.
+1. Add `public/CNAME` containing `vulturesecurity.ca`.
+2. In the workflow, delete `NEXT_PUBLIC_BASE_PATH` and set `NEXT_PUBLIC_SITE_URL: https://vulturesecurity.ca`. Push.
+3. Repo Settings → Pages → Custom domain: `vulturesecurity.ca`.
+4. At the domain registrar, point the apex at GitHub Pages with four A records
+   (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`) and `www` with a CNAME to
+   `miker888.github.io`. **Leave the MX records alone** so info@vulturesecurity.ca keeps working.
+5. When the certificate is issued, tick **Enforce HTTPS**.
+6. Keep Wix running until the new site is live on the domain, then cancel it. If the domain itself is registered
+   through Wix, transfer it to a registrar first.

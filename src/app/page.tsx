@@ -1,29 +1,36 @@
 import About from "@/components/About";
 import Contact from "@/components/Contact";
+import CtaBand from "@/components/CtaBand";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import LatestPosts from "@/components/LatestPosts";
 import Partners from "@/components/Partners";
 import Services from "@/components/Services";
-
-// The News & Updates block reads from Supabase. Without this the list is baked
-// in at build time and a newly published post never appears here.
-export const revalidate = 300;
+import ServicesStrip from "@/components/ServicesStrip";
+import Standard from "@/components/Standard";
+import WhoWeProtect from "@/components/WhoWeProtect";
+import { getPublishedPosts } from "@/lib/posts";
 
 export default function Home() {
+  const showNews = getPublishedPosts().length > 0;
+
   return (
     <>
-      <Header />
+      <Header showNews={showNews} />
       <main>
         <Hero />
-        <About />
+        <ServicesStrip />
         <Services />
+        <WhoWeProtect />
+        <About />
+        <Standard />
         <Partners />
         <LatestPosts />
+        <CtaBand />
         <Contact />
       </main>
-      <Footer />
+      <Footer showNews={showNews} />
     </>
   );
 }

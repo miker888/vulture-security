@@ -1,55 +1,64 @@
 import Image from "next/image";
+import heroGuard from "@/assets/hero-guard.jpg";
 import { site } from "@/lib/site";
+import Icon from "./Icon";
+import { ButtonLink, Eyebrow } from "./ui";
+
+const trust = [
+  { label: "Alberta licensed", icon: "shield" },
+  { label: "Hands-off, de-escalation first", icon: "chat" },
+  { label: "Clear incident reporting", icon: "file" },
+] as const;
 
 export default function Hero() {
   return (
-    <section id="top" className="relative isolate overflow-hidden bg-ink">
-      <Image
-        src="/images/hero.jpg"
-        alt="Vulture Security Services guards on post at a commercial entrance"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover"
-      />
-      {/* Legibility scrim: darker at the edges, lifted in the middle */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/35 to-black/80" />
+    <section id="top" className="bg-ink">
+      <div className="wrap flex flex-wrap items-stretch gap-10 py-[clamp(40px,6vw,88px)]">
+        <div className="flex min-w-0 flex-[1_1_560px] flex-col justify-center gap-7">
+          <Eyebrow>Calgary security officers, day and night</Eyebrow>
 
-      {/* Fixed heights rather than vh: the hero photo is a wide 2.3:1 crop, and
-          a tall viewport would scale it up and cut the guards off the edges. */}
-      <div className="relative mx-auto flex min-h-[560px] max-w-4xl flex-col items-center justify-center px-5 py-20 text-center sm:min-h-[620px] lg:min-h-[680px]">
-        <Image
-          src="/images/shield.png"
-          alt=""
-          width={320}
-          height={380}
-          priority
-          className="mb-8 h-36 w-auto drop-shadow-2xl sm:h-44"
-        />
+          <h1 className="font-display text-[clamp(42px,5vw,76px)] font-extrabold uppercase leading-[0.92] tracking-[0.3px]">
+            Professional security{" "}
+            <span className="block text-brand-head">you can rely on.</span>
+          </h1>
 
-        <h1 className="font-display text-4xl font-bold leading-[1.12] tracking-[-0.02em] text-white sm:text-5xl md:text-6xl">
-          Watching for Threats.
-          <br />
-          Protecting Your Assets.
-        </h1>
+          <p className="max-w-[560px] text-[clamp(17px,1.4vw,20px)] leading-relaxed text-[#c4c4c9]">
+            Licensed security officers, mobile patrol and loss prevention for
+            Calgary businesses, properties and events. A calm, visible presence
+            that protects your people and represents your brand.
+          </p>
 
-        <p className="mt-6 max-w-xl text-base text-white/80 sm:text-lg">
-          {site.subline}
-        </p>
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href="/risk-assessment/" icon="calendar">
+              Book your free risk assessment
+            </ButtonLink>
+            <ButtonLink href={site.contact.phoneHref} icon="phone" variant="outlineDark">
+              {site.contact.phone}
+            </ButtonLink>
+          </div>
 
-        <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-          <a
-            href="#contact"
-            className="rounded-full bg-crimson px-8 py-3.5 text-sm font-semibold tracking-wide text-white transition-colors hover:bg-crimson-dark"
-          >
-            Get Started
-          </a>
-          <a
-            href="#services"
-            className="rounded-full border border-white/40 px-8 py-3.5 text-sm font-semibold tracking-wide text-white transition-colors hover:border-white hover:bg-white/10"
-          >
-            Our Services
-          </a>
+          <ul className="mt-1 flex flex-wrap gap-x-8 gap-y-3.5 border-t border-[#232327] pt-6 text-[15px] font-semibold text-[#e7e7e9]">
+            {trust.map((t) => (
+              <li key={t.label} className="flex items-center gap-2.5">
+                <Icon name={t.icon} size={22} className="text-brand-hot" />
+                {t.label}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="relative min-h-[540px] w-full min-w-0 flex-[0_1_420px]">
+          <div aria-hidden="true" className="clip-hero-slab absolute inset-0 bg-brand" />
+          <div className="clip-hero-photo absolute inset-0">
+            <Image
+              src={heroGuard}
+              alt="Vulture security officer in uniform standing post outside a commercial building entrance"
+              fill
+              priority
+              placeholder="blur"
+              className="object-cover object-[center_25%]"
+            />
+          </div>
         </div>
       </div>
     </section>
