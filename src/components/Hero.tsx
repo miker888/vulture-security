@@ -19,7 +19,7 @@ export default function Hero() {
 
           <h1 className="font-display text-[clamp(42px,5vw,76px)] font-extrabold uppercase leading-[0.92] tracking-[0.3px]">
             Professional security{" "}
-            <span className="block text-brand-head">you can rely on.</span>
+            <span className="block text-brand-head">you can trust.</span>
           </h1>
 
           <p className="max-w-[560px] text-[clamp(17px,1.4vw,20px)] leading-relaxed text-[#c4c4c9]">

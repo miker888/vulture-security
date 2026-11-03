@@ -13,7 +13,7 @@ export const site = {
   name: "Vulture Security Services",
   legalName: "Vulture Security Services Ltd.",
   url: "https://vulturesecurity.ca",
-  tagline: "Professional security you can rely on.",
+  tagline: "Professional security you can trust.",
   description:
     "Licensed security officers, mobile patrol, loss prevention and event security for Calgary businesses, properties and events. Book a free risk assessment.",
   // Shown in the footer. Fill in once confirmed.
