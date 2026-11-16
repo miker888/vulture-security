@@ -17,7 +17,7 @@ export const site = {
   description:
     "Licensed security officers, mobile patrol, loss prevention and event security for Calgary businesses, properties and events. Book a free risk assessment.",
   // Shown in the footer. Fill in once confirmed.
-  licence: "[Licence no.]",
+  licence: "", // e.g. "Licence no. 123456". Hidden while empty.
   contact: {
     addressLines: ["1707 - 555 4 Ave SW", "Calgary, AB T2P 3E7"],
     phone: "587-205-8148",

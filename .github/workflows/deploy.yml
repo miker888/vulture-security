@@ -30,11 +30,10 @@ jobs:
       - name: Build static site
         run: npm run build
         env:
-          # Project sites live at https://<owner>.github.io/<repo>/.
-          # When vulturesecurity.ca points here: delete NEXT_PUBLIC_BASE_PATH,
-          # set NEXT_PUBLIC_SITE_URL to https://vulturesecurity.ca and add public/CNAME.
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
-          NEXT_PUBLIC_SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          # Served from the custom domain root, so no base path.
+          # The domain itself is set in repo Settings > Pages (no CNAME file
+          # is needed when publishing with GitHub Actions).
+          NEXT_PUBLIC_SITE_URL: https://vulturesecurity.ca
 
       - uses: actions/upload-pages-artifact@v3
         with:

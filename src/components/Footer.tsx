@@ -60,7 +60,7 @@ export default function Footer({ showNews = false }: { showNews?: boolean }) {
           <span>
             © {new Date().getFullYear()} {site.legalName}. All rights reserved.
           </span>
-          <span>Alberta security services licence {site.licence}</span>
+          {site.licence && <span>Alberta security services licence {site.licence}</span>}
         </div>
       </div>
     </footer>

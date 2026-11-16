@@ -4,8 +4,8 @@ Marketing site for Vulture Security Services Ltd., Calgary. Replaces the Wix sit
 Set up the same way as the Aspire site:
 
 - **Framework:** Next.js, exported as a static site (`out/`)
-- **Hosting:** GitHub Pages, deployed automatically on every push to `main`
-- **Forms:** the contact form and the risk assessment form save to a Supabase `leads` table
+- **Hosting:** GitHub Pages at vulturesecurity.ca, deployed automatically on every push to `main`
+- **Forms:** the contact form and the risk assessment form save to a Supabase `leads` table and email info@vulturesecurity.ca
 
 ## Pages
 
@@ -67,23 +67,38 @@ npm run dev                  # http://localhost:3000
 ## Deploying
 
 `.github/workflows/deploy.yml` builds and publishes to GitHub Pages on every push to `main`.
+The site is served at the root of **https://vulturesecurity.ca**.
 
-1. Repo Settings → Pages → Source: **GitHub Actions**.
-2. GitHub Pages on a free account only works for **public** repos (Aspire is public). Either make this repo public
-   or use GitHub Pro.
+- Repo Settings → Pages → Source: **GitHub Actions**, Custom domain: `vulturesecurity.ca`, **Enforce HTTPS** on.
+- No `CNAME` file: GitHub ignores it when publishing with Actions.
 
-The preview lives at `https://miker888.github.io/vulture-security/`.
+### DNS (GoDaddy)
 
-### Moving vulturesecurity.ca off Wix
+The domain's DNS is at GoDaddy. Email is Microsoft 365, also through GoDaddy.
 
-Only once the preview is approved:
+| Type | Name | Value | Purpose |
+| --- | --- | --- | --- |
+| A | `@` | `185.199.108.153` | Website (GitHub Pages) |
+| A | `@` | `185.199.109.153` | Website |
+| A | `@` | `185.199.110.153` | Website |
+| A | `@` | `185.199.111.153` | Website |
+| CNAME | `www` | `miker888.github.io` | Website, www redirects to the bare domain |
+| MX | `send` | from Resend | Lead alert email (Resend) |
+| TXT | `send` | from Resend | Lead alert email (Resend) |
+| TXT | `resend._domainkey` | from Resend | Lead alert email (Resend) |
 
-1. Add `public/CNAME` containing `vulturesecurity.ca`.
-2. In the workflow, delete `NEXT_PUBLIC_BASE_PATH` and set `NEXT_PUBLIC_SITE_URL: https://vulturesecurity.ca`. Push.
-3. Repo Settings → Pages → Custom domain: `vulturesecurity.ca`.
-4. At the domain registrar, point the apex at GitHub Pages with four A records
-   (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`) and `www` with a CNAME to
-   `miker888.github.io`. **Leave the MX records alone** so info@vulturesecurity.ca keeps working.
-5. When the certificate is issued, tick **Enforce HTTPS**.
-6. Keep Wix running until the new site is live on the domain, then cancel it. If the domain itself is registered
-   through Wix, transfer it to a registrar first.
+Leave the Microsoft 365 records alone: the root `MX` (`...mail.protection.outlook.com`), the root `TXT`
+records (`NETORG...onmicrosoft.com` and `v=spf1 include:secureserver.net -all`), `_dmarc`, `autodiscover`
+and any other email entries.
+
+## Email alerts for new leads
+
+[`supabase/lead-alerts.sql`](supabase/lead-alerts.sql) adds a trigger in the shared virus-demos project:
+every new lead with `site = 'vulture-security'` is emailed to info@vulturesecurity.ca through
+[Resend](https://resend.com) (free plan: 3,000 emails a month, 100 a day). Alerts come from
+`website@vulturesecurity.ca`, and replying goes straight to the visitor.
+
+- The Resend API key lives encrypted in Supabase Vault (`vulture_resend_api_key`), never in this repo.
+- If an email fails, the lead is still saved. Check sends with
+  `select created, status_code, content::text from net._http_response order by created desc limit 5;`
+- Turn alerts off with `drop trigger if exists email_vulture_lead on public.leads;`
